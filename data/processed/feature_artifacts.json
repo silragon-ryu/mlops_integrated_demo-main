@@ -1,0 +1,49 @@
+{
+  "input": {
+    "path": "data/raw/sales_raw.csv",
+    "total_rows_loaded": 54743,
+    "total_columns_loaded": 7
+  },
+  "split": {
+    "cutoff_date": "2025-10-04 00:00:00",
+    "train_rows": 43794,
+    "test_rows": 10949
+  },
+  "thresholds": {
+    "low": 3.0,
+    "high": 8.0
+  },
+  "class_counts": {
+    "0": 16448,
+    "1": 13442,
+    "2": 13904
+  },
+  "class_weights": {
+    "0": 0.8806443961978435,
+    "1": 1.0775806448937755,
+    "2": 1.0417749589083811
+  },
+  "hash_buckets": {
+    "item": 2000,
+    "branch": 200,
+    "invoice": 5000,
+    "item_branch": 5000,
+    "item_month": 5000
+  },
+  "features": {
+    "numeric_features": [
+      "QuantitySold",
+      "year",
+      "month",
+      "day",
+      "dayofweek",
+      "is_weekend",
+      "h_item",
+      "h_branch",
+      "h_invoice",
+      "h_item_branch",
+      "h_item_month"
+    ],
+    "target": "y_class"
+  }
+}

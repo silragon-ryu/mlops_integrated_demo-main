@@ -1,0 +1,59 @@
+name: MLOps Integrated Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  commit-stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # We install these specifically for the Unit Tests to run
+          pip install pandas numpy pytest flake8 xgboost scikit-learn mlflow
+
+      - name: Code Analysis (Linting)
+        run: |
+          # Fails build on syntax errors (Part 3 Trigger)
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Run Unit Tests
+        run: |
+          # Runs the isolated logic tests we wrote in Step 1
+          pytest tests/test_core_logic.py
+
+  deployment-stage:
+    needs: commit-stage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build & Start Services
+        run: |
+          # Uses your existing docker-compose.yml to build the whole stack
+          docker compose up -d --build
+          
+          # Debug: check if containers are running
+          docker ps -a
+
+      - name: Run Smoke Test
+        run: |
+          chmod +x scripts/smoke_test.sh
+          ./scripts/smoke_test.sh
+
+      - name: Tear Down
+        if: always()
+        run: docker compose down
