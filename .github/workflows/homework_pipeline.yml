@@ -32,7 +32,7 @@ jobs:
       - name: Run Unit Tests
         run: |
           # Runs the isolated logic tests we wrote in Step 1
-          pytest tests/test_core_logic.py
+          pytest tests/test_homework_specs.py
 
   deployment-stage:
     needs: commit-stage
