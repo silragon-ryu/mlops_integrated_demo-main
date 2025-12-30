@@ -8,6 +8,7 @@ services:
       - mlruns:/mlruns
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
+    # We keep the command here because MLflow is simple to install quickly
     command: >
       bash -lc "pip install --no-cache-dir mlflow==2.12.1 &&
       mkdir -p /mlruns/artifacts &&
@@ -18,19 +19,16 @@ services:
       - "5000:5000"
 
   api:
-    image: python:3.11-slim
+    build: .                 # <--- CHANGED: Build from your Dockerfile
     working_dir: /app
     volumes:
-      - ./:/app
-      - mlruns:/mlruns
+      - ./:/app              # Mounts code for live updates (development)
+      - mlruns:/mlruns       # Access to MLflow artifacts
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
       - MODEL_NAME=sales-quantity-classifier
       - MODEL_ALIAS=@production
       - TRAIN_PROCESSED_PATH=data/processed/train.csv
-    command: >
-      bash -lc "pip install --no-cache-dir -r requirements.txt &&
-      uvicorn serving.app:app --host 0.0.0.0 --port 8000"
     depends_on:
       - mlflow
     ports:
